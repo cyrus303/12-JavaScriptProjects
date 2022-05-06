@@ -71,13 +71,32 @@ const menu = [
     img: './images/item-9.jpeg',
     desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
   },
+  {
+    id: 10,
+    title: 'Chicken Biryani',
+    category: 'Dinner',
+    price: 12.99,
+    img: './images/item-10.jpeg',
+    desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
+  },
 ];
 
 const sectionCenter = document.querySelector('.section-center');
 
+const btnContainer = document.querySelector('.btn-container');
+
+// ! Loading all items
 window.addEventListener('DOMContentLoaded', function () {
-  let displayMenu = menu.map(function (item) {
-    // console.log(item);
+  displayMenuItems(menu);
+  // !using reduce to find unique catogories
+  displayMenuButtons();
+});
+
+// ! Filtering all items
+
+function displayMenuItems(menuItems) {
+  let displayMenu = menuItems.map(function (item) {
+    //console.log(item);
 
     return `<article class="menu-item">
           <img src=${item.img} alt=${item.title} class="photo" />
@@ -93,7 +112,37 @@ window.addEventListener('DOMContentLoaded', function () {
         </article>`;
   });
   displayMenu = displayMenu.join('');
-  console.log(displayMenu);
-
   sectionCenter.innerHTML = displayMenu;
-});
+}
+
+function displayMenuButtons() {
+  const categories = menu.reduce(
+    (values, item) => {
+      if (!values.includes(item.category)) {
+        values.push(item.category);
+      }
+      return values;
+    },
+    ['all']
+  );
+  let categoryBtns = categories.map((category) => {
+    return `<button class="filter-btn" type="button" data-id='${category}'>${category}</button>`;
+  });
+  categoryBtns = categoryBtns.join('');
+  btnContainer.innerHTML = categoryBtns;
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const category = e.currentTarget.dataset.id;
+      const menuCategory = menu.filter(function (menuItem) {
+        if (menuItem.category === category) return menuItem;
+      });
+      if (category === 'all') {
+        displayMenuItems(menu);
+      } else {
+        displayMenuItems(menuCategory);
+      }
+      console.log(menuCategory);
+    });
+  });
+}
